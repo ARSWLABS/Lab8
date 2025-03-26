@@ -13,7 +13,7 @@ var app = (function () {
     var drawPoint = function (x, y) {
         context.beginPath();
         context.arc(x, y, 3, 0, 2 * Math.PI);
-        context.fillStyle = 'black';  // Corregido: 'fillStyle' en lugar de 'fillstyle'
+        context.fillStyle = 'black';  
         context.fill();
     };
 
