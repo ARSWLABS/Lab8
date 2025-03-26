@@ -37,7 +37,9 @@ var app = (function () {
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/TOPICXX', function (eventbody) {
-                
+                var receivedPoint = JSON.parse(eventbody.body);
+                alert("Received: "+receivedPoint.x+", "+receivedPoint.y);
+                addPointToCanvas(receivedPoint);
                 
             });
         });
@@ -61,6 +63,9 @@ var app = (function () {
             addPointToCanvas(pt);
 
             //publicar el evento
+            if(stompClient!=null){
+                stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));
+            }
         },
 
         disconnect: function () {
