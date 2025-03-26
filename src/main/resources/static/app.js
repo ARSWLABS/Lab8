@@ -36,7 +36,7 @@ var app = (function () {
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/TOPICXX', function (eventbody) {
+            stompClient.subscribe('/topic/newpoint', function (eventbody) {
                 var receivedPoint = JSON.parse(eventbody.body);
                 alert("Received: "+receivedPoint.x+", "+receivedPoint.y);
                 addPointToCanvas(receivedPoint);
