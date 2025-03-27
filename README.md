@@ -108,6 +108,17 @@ Ajuste la aplicación anterior para que pueda manejar más de un dibujo a la vez
 3. De la misma manera, haga que las publicaciones se realicen al tópico asociado al identificador ingresado por el usuario.
 4. Rectifique que se puedan realizar dos dibujos de forma independiente, cada uno de éstos entre dos o más clientes.
 
+en este ejercicio nos conectamos al numero 1 y en dos pestañas se va replicando en tiempo real el dibujo
+![](img/Parte3.png)
+
+![](img/Parte3-1.png)
+
+aca al numero 2
+
+![](img/Parte3-2.png)
+
+![](img/Parte3-3.png)
+
 	```bash
 	git commit -m "PARTE 3".
 	```
