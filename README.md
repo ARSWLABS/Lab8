@@ -2,25 +2,33 @@
 ### Arquitecturas de Software - ARSW
 ### Laboratorio - Broker de Mensajes STOMP con WebSockets + HTML5 Canvas.
 
+### Integrantes: Diego Chicuazuque Y Juan Cancelado
 
+# Características
 
-- Conectarse con un botón
-- publicar con eventos de mouse
+Conexión en múltiples pestañas: Los usuarios pueden abrir varias pestañas y recibir los puntos que otros usuarios envían.
 
-var newpoint = JSON.parse(greeting.body);
-                addPointToCanvas(newpoint);
+Dibujar con el mouse: Los usuarios pueden hacer clic en el lienzo para agregar puntos en tiempo real.
 
+Uso de WebSockets y STOMP: Comunicación en tiempo real mediante un backend en Spring Boot y un frontend en JavaScript.
 
-stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));  				
+Interfaz gráfica interactiva: Un lienzo HTML5 (canvas) donde los usuarios pueden ver los puntos agregados en tiempo real.
 
+# estructura del Proyecto
 
-Este ejercicio se basa en la documentación oficial de SprinbBoot, para el [manejo de WebSockets con STOMP](https://spring.io/guides/gs/messaging-stomp-websocket/).
+## Frontend
 
-En este repositorio se encuentra una aplicación SpringBoot que está configurado como Broker de mensajes, de forma similar a lo mostrado en la siguiente figura:
+JavaScript (app.js): Manejador del WebSocket, envío de puntos y eventos de dibujo en el canvas.
 
-![](https://docs.spring.io/spring/docs/current/spring-framework-reference/images/message-flow-simple-broker.png)
+HTML (index.html): Interfaz de usuario con el lienzo y controles de conexión.
 
-En este caso, el manejador de mensajes asociado a "/app" aún no está configurado, pero sí lo está el broker '/topic'. Como mensaje, se usarán puntos, pues se espera que esta aplicación permita progragar eventos de dibujo de puntos generados por los diferentes clientes.
+CSS (styles.css): Estilos básicos para el lienzo y botones.
+
+## Backend (Spring Boot)
+
+Configuración WebSocket: Configuración del broker de mensajes.
+
+Controlador STOMP: Manejo de los mensajes entrantes y transmisión a los suscriptores.
 
 ## Parte I.
 
@@ -48,7 +56,24 @@ Para esto, realice lo siguiente:
 	var theObject=JSON.parse(message.body);
 	```
 3. Compile y ejecute su aplicación. Abra la aplicación en varias pestañas diferentes (para evitar problemas con el caché del navegador, use el modo 'incógnito' en cada prueba).
+
+![](img/imagen1.png)
+
 4. Ingrese los datos, ejecute la acción del botón, y verifique que en todas la pestañas se haya lanzado la alerta con los datos ingresados.
+
+aca miramos la primera pestaña
+
+![](img/imagen2.png)
+
+luego revisamos la segunda y se pintan los puntos tal cual
+
+![](img/imagen3.png)
+
+y luego la tercera
+
+![](img/imagen4.png)
+
+
 
 5. Haga commit de lo realizado, para demarcar el avance de la parte 2.
 
@@ -62,9 +87,13 @@ Para esto, realice lo siguiente:
 Para hacer mas útil la aplicación, en lugar de capturar las coordenadas con campos de formulario, las va a capturar a través de eventos sobre un elemento de tipo \<canvas>. De la misma manera, en lugar de simplemente mostrar las coordenadas enviadas en los eventos a través de 'alertas', va a dibujar dichos puntos en el mismo canvas. Haga uso del mecanismo de captura de eventos de mouse/táctil usado en ejercicios anteriores con este fin.
 
 1. Haga que el 'callback' asociado al tópico /topic/newpoint en lugar de mostrar una alerta, dibuje un punto en el canvas en las coordenadas enviadas con los eventos recibidos. Para esto puede [dibujar un círculo de radio 1](http://www.w3schools.com/html/html5_canvas.asp).
-4. Ejecute su aplicación en varios navegadores (y si puede en varios computadores, accediendo a la aplicación mendiante la IP donde corre el servidor). Compruebe que a medida que se dibuja un punto, el mismo es replicado en todas las instancias abiertas de la aplicación.
+2. Ejecute su aplicación en varios navegadores (y si puede en varios computadores, accediendo a la aplicación mendiante la IP donde corre el servidor). Compruebe que a medida que se dibuja un punto, el mismo es replicado en todas las instancias abiertas de la aplicación.
 
-5. Haga commit de lo realizado, para marcar el avance de la parte 2.
+![](img/Parte2Imagen1.png)
+
+![](img/Parte2Imagen2.png)
+
+3. Haga commit de lo realizado, para marcar el avance de la parte 2.
 
 	```bash
 	git commit -m "PARTE 2".
