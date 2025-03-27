@@ -33,6 +33,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <!--X:<input id="x" type="number"/>
         Y:<input id="y" type="number"/>        
         <button onclick="app.publishPoint($('#x').val(),$('#y').val())">Send point</button>-->
+        <div style="text-align: center; margin-top: 20px;">
+            <input type="number" id="drawingId" placeholder="Ingrese ID del dibujo">
+            <button id="connectBtn">Conectarse</button>
+        </div>
         <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
             <canvas id="canvas" width="500" height="500" style="border:1px solid black;"></canvas>
         </div>
