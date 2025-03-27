@@ -49,23 +49,51 @@ var app = (function () {
         console.info('Connecting to WebSocket...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
-
+    
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-
+    
             stompClient.subscribe('/topic/newpoint.' + topic, function (eventbody) {
-                var receivedPoit = JSON.parse(eventbody.body);
-                console.log('Received point:', receivedPoit);
-                addPointToCanvas(receivedPoit);
+                var receivedPoint = JSON.parse(eventbody.body);
+                console.log('Received point:', receivedPoint);
+                addPointToCanvas(receivedPoint);
+            });
+    
+            stompClient.subscribe('/topic/newpolygon.' + topic, function (eventbody) {
+                var polygonPoints = JSON.parse(eventbody.body);
+                console.log('Received polygon:', polygonPoints);
+                drawPolygon(polygonPoints);
             });
         });
     };
+    
 
     var publishPoint = function(px, py) {
         var pt = new Point(px, py);
         console.info("Publishing point at: ", pt);
-        stompClient.send("/topic/newpoint." + topic, {}, JSON.stringify(pt));
+        stompClient.send("/app/newpoint." + topic, {}, JSON.stringify(pt));
     };
+    
+    var drawPolygon = function(points) {
+        console.log('Drawing polygon:', points);
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+    
+        if (points.length < 3) return; 
+    
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+    
+        for (var i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
+        }
+    
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(252, 5, 13, 0.69)'; // Azul translúcido
+        ctx.fill();
+        ctx.stroke();
+    };
+    
 
     return {
         init: function () {
