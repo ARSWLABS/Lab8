@@ -2,25 +2,33 @@
 ### Arquitecturas de Software - ARSW
 ### Laboratorio - Broker de Mensajes STOMP con WebSockets + HTML5 Canvas.
 
+### Integrantes: Diego Chicuazuque Y Juan Cancelado
 
+# Características
 
-- Conectarse con un botón
-- publicar con eventos de mouse
+Conexión en múltiples pestañas: Los usuarios pueden abrir varias pestañas y recibir los puntos que otros usuarios envían.
 
-var newpoint = JSON.parse(greeting.body);
-                addPointToCanvas(newpoint);
+Dibujar con el mouse: Los usuarios pueden hacer clic en el lienzo para agregar puntos en tiempo real.
 
+Uso de WebSockets y STOMP: Comunicación en tiempo real mediante un backend en Spring Boot y un frontend en JavaScript.
 
-stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));  				
+Interfaz gráfica interactiva: Un lienzo HTML5 (canvas) donde los usuarios pueden ver los puntos agregados en tiempo real.
 
+# estructura del Proyecto
 
-Este ejercicio se basa en la documentación oficial de SprinbBoot, para el [manejo de WebSockets con STOMP](https://spring.io/guides/gs/messaging-stomp-websocket/).
+## Frontend
 
-En este repositorio se encuentra una aplicación SpringBoot que está configurado como Broker de mensajes, de forma similar a lo mostrado en la siguiente figura:
+JavaScript (app.js): Manejador del WebSocket, envío de puntos y eventos de dibujo en el canvas.
 
-![](https://docs.spring.io/spring/docs/current/spring-framework-reference/images/message-flow-simple-broker.png)
+HTML (index.html): Interfaz de usuario con el lienzo y controles de conexión.
 
-En este caso, el manejador de mensajes asociado a "/app" aún no está configurado, pero sí lo está el broker '/topic'. Como mensaje, se usarán puntos, pues se espera que esta aplicación permita progragar eventos de dibujo de puntos generados por los diferentes clientes.
+CSS (styles.css): Estilos básicos para el lienzo y botones.
+
+## Backend (Spring Boot)
+
+Configuración WebSocket: Configuración del broker de mensajes.
+
+Controlador STOMP: Manejo de los mensajes entrantes y transmisión a los suscriptores.
 
 ## Parte I.
 
@@ -48,7 +56,24 @@ Para esto, realice lo siguiente:
 	var theObject=JSON.parse(message.body);
 	```
 3. Compile y ejecute su aplicación. Abra la aplicación en varias pestañas diferentes (para evitar problemas con el caché del navegador, use el modo 'incógnito' en cada prueba).
+
+![](img/imagen1.png)
+
 4. Ingrese los datos, ejecute la acción del botón, y verifique que en todas la pestañas se haya lanzado la alerta con los datos ingresados.
+
+aca miramos la primera pestaña
+
+![](img/imagen2.png)
+
+luego revisamos la segunda y se pintan los puntos tal cual
+
+![](img/imagen3.png)
+
+y luego la tercera
+
+![](img/imagen4.png)
+
+
 
 5. Haga commit de lo realizado, para demarcar el avance de la parte 2.
 
@@ -62,9 +87,13 @@ Para esto, realice lo siguiente:
 Para hacer mas útil la aplicación, en lugar de capturar las coordenadas con campos de formulario, las va a capturar a través de eventos sobre un elemento de tipo \<canvas>. De la misma manera, en lugar de simplemente mostrar las coordenadas enviadas en los eventos a través de 'alertas', va a dibujar dichos puntos en el mismo canvas. Haga uso del mecanismo de captura de eventos de mouse/táctil usado en ejercicios anteriores con este fin.
 
 1. Haga que el 'callback' asociado al tópico /topic/newpoint en lugar de mostrar una alerta, dibuje un punto en el canvas en las coordenadas enviadas con los eventos recibidos. Para esto puede [dibujar un círculo de radio 1](http://www.w3schools.com/html/html5_canvas.asp).
-4. Ejecute su aplicación en varios navegadores (y si puede en varios computadores, accediendo a la aplicación mendiante la IP donde corre el servidor). Compruebe que a medida que se dibuja un punto, el mismo es replicado en todas las instancias abiertas de la aplicación.
+2. Ejecute su aplicación en varios navegadores (y si puede en varios computadores, accediendo a la aplicación mendiante la IP donde corre el servidor). Compruebe que a medida que se dibuja un punto, el mismo es replicado en todas las instancias abiertas de la aplicación.
 
-5. Haga commit de lo realizado, para marcar el avance de la parte 2.
+![](img/Parte2Imagen1.png)
+
+![](img/Parte2Imagen2.png)
+
+3. Haga commit de lo realizado, para marcar el avance de la parte 2.
 
 	```bash
 	git commit -m "PARTE 2".
@@ -78,6 +107,17 @@ Ajuste la aplicación anterior para que pueda manejar más de un dibujo a la vez
 2. Modifique la aplicación para que, en lugar de conectarse y suscribirse automáticamente (en la función init()), lo haga a través de botón 'conectarse'. Éste, al oprimirse debe realizar la conexión y suscribir al cliente a un tópico que tenga un nombre dinámico, asociado el identificador ingresado, por ejemplo: /topic/newpoint.25, topic/newpoint.80, para los dibujos 25 y 80 respectivamente.
 3. De la misma manera, haga que las publicaciones se realicen al tópico asociado al identificador ingresado por el usuario.
 4. Rectifique que se puedan realizar dos dibujos de forma independiente, cada uno de éstos entre dos o más clientes.
+
+en este ejercicio nos conectamos al numero 1 y en dos pestañas se va replicando en tiempo real el dibujo
+![](img/Parte3.png)
+
+![](img/Parte3-1.png)
+
+aca al numero 2
+
+![](img/Parte3-2.png)
+
+![](img/Parte3-3.png)
 
 	```bash
 	git commit -m "PARTE 3".
@@ -126,6 +166,15 @@ Para ver cómo manejar esto desde el manejador de eventos STOMP del servidor, re
 	
 	
 5. A partir de los diagramas dados en el archivo ASTAH incluido, haga un nuevo diagrama de actividades correspondiente a lo realizado hasta este punto, teniendo en cuenta el detalle de que ahora se tendrán tópicos dinámicos para manejar diferentes dibujos simultáneamente.
+
+Hicimos 3 figuras en la primera pestaña
+
+![](img/Parte4.png)
+
+En la segunda aparecieron y viceversa
+
+![](img/Parte4-1.png)
+
 
 5. Haga commit de lo realizado.
 

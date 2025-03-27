@@ -8,75 +8,110 @@ var app = (function () {
     }
 
     var stompClient = null;
-    var canvas, context;
-    var currentDrawingId = null;
+    var topic;
 
-    var drawPoint = function (x, y) {
-        context.beginPath();
-        context.arc(x, y, 3, 0, 2 * Math.PI);
-        context.fillStyle = 'black';
-        context.fill();
-    };
-
-    var handleCanvasClick = function (event) {
-        if (!stompClient || !currentDrawingId) {
-            alert("Debes conectarte primero.");
-            return;
+    var setTopic = function (number) {
+        topic = number;
+        if (!stompClient) {
+            connectAndSubscribe();
+        } else {
+            stompClient.unsubscribe();
+            connectAndSubscribe();
         }
-
-        const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        var pt = new Point(x, y);
-
-        console.info("Publishing point at ", pt);
-        stompClient.send(`/app/newpoint.${currentDrawingId}`, {}, JSON.stringify(pt));
-        drawPoint(x, y);
     };
+    
 
     var addPointToCanvas = function (point) {
+        console.log('Received point:', point);
+        if (typeof point.x !== 'undefined' && typeof point.y !== 'undefined') {
+            var canvas = document.getElementById("canvas");
+            var ctx = canvas.getContext("2d");
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = 'black';
+            ctx.fill();
+            ctx.stroke();
+        } else {
+            console.error('Invalid point format:', point);
+        }
+    };
+
+    var getMousePosition = function (evt) {
         var canvas = document.getElementById("canvas");
-        var ctx = canvas.getContext("2d");
-        ctx.beginPath();
-        ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
-        ctx.fillStyle = "red";
-        ctx.fill();
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top
+        };
     };
 
     var connectAndSubscribe = function () {
-        var drawingId = document.getElementById("drawingId").value;
-        if (!drawingId) {
-            alert("Por favor ingrese un identificador de dibujo.");
-            return;
-        }
-
-        currentDrawingId = drawingId;
-        console.info('Connecting to WS...');
+        console.info('Connecting to WebSocket...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
-
+    
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            let topic = `/topic/newpoint.${currentDrawingId}`;
-            console.log("Subscribed to: " + topic);
-            stompClient.subscribe(topic, function (eventbody) {
+    
+            stompClient.subscribe('/topic/newpoint.' + topic, function (eventbody) {
                 var receivedPoint = JSON.parse(eventbody.body);
+                console.log('Received point:', receivedPoint);
                 addPointToCanvas(receivedPoint);
+            });
+    
+            stompClient.subscribe('/topic/newpolygon.' + topic, function (eventbody) {
+                var polygonPoints = JSON.parse(eventbody.body);
+                console.log('Received polygon:', polygonPoints);
+                drawPolygon(polygonPoints);
             });
         });
     };
+    
+
+    var publishPoint = function(px, py) {
+        var pt = new Point(px, py);
+        console.info("Publishing point at: ", pt);
+        stompClient.send("/app/newpoint." + topic, {}, JSON.stringify(pt));
+    };
+    
+    var drawPolygon = function(points) {
+        console.log('Drawing polygon:', points);
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+    
+        if (points.length < 3) return; 
+    
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+    
+        for (var i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
+        }
+    
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(252, 5, 13, 0.69)'; // Azul translúcido
+        ctx.fill();
+        ctx.stroke();
+    };
+    
 
     return {
         init: function () {
-            canvas = document.getElementById("canvas");
-            context = canvas.getContext("2d");
-
-            document.getElementById("connectBtn").addEventListener("click", connectAndSubscribe);
-
+            var canvas = document.getElementById("canvas");
             canvas.addEventListener("click", function (evt) {
-                handleCanvasClick(evt);
-            });
+                var mousePos = getMousePosition(evt);
+                publishPoint(mousePos.x, mousePos.y);
+            }, false);
+        },
+        setTopic: setTopic,
+        publishPoint: publishPoint,
+        disconnect: function () {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+            }
+            console.log("Disconnected");
         }
     };
-
 })();
+
+app.init();
